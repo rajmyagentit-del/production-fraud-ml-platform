@@ -1,0 +1,38 @@
+[project]
+name = "production-fraud-ml-platform"
+version = "0.1.0"
+description = "Production-grade fraud and abuse detection ML platform"
+requires-python = ">=3.11,<3.12"
+
+dependencies = [
+    "pandas",
+    "numpy",
+    "scikit-learn",
+    "xgboost",
+    "pyarrow",
+    "matplotlib",
+    "seaborn",
+    "mlflow",
+    "pydantic",
+    "pydantic-settings",
+    "pyyaml",
+    "joblib",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-cov",
+    "ruff",
+    "black",
+    "pre-commit",
+]
+
+api = [
+    "fastapi",
+    "uvicorn[standard]",
+]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"

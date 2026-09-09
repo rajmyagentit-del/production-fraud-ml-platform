@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+
+# Environment
+.env
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Data
+data/raw/*
+data/processed/*
+data/sample/*
+
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!data/sample/.gitkeep
+
+# Models
+models/*
+!models/.gitkeep
+
+# MLflow
+mlruns/
+mlflow.db
+
+# Reports
+reports/figures/*
+reports/metrics/*
+!reports/figures/.gitkeep
+!reports/metrics/.gitkeep
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
