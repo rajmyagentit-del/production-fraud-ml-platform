@@ -15,6 +15,7 @@ from xgboost import XGBClassifier
 
 from fraud_ml.data import load_transactions
 from fraud_ml.validation import validate_schema, validate_target
+from fraud_ml.splitting import strict_time_split
 
 
 DATA_PATH = Path("data/raw/transactions.csv")
@@ -56,17 +57,6 @@ def create_safe_features(df: pd.DataFrame) -> pd.DataFrame:
     return data
 
 
-def chronological_split(df: pd.DataFrame, fraction: float = 0.8):
-    df = df.sort_values("step", kind="stable").reset_index(drop=True)
-
-    split_index = int(len(df) * fraction)
-
-    train_df = df.iloc[:split_index].copy()
-    test_df = df.iloc[split_index:].copy()
-
-    return train_df, test_df
-
-
 def main() -> None:
     print("Loading PaySim...")
     df = load_transactions(DATA_PATH)
@@ -75,7 +65,7 @@ def main() -> None:
     validate_target(df)
 
     print("Creating chronological split...")
-    train_df, test_df = chronological_split(df)
+    train_df, test_df, cutoff_time = strict_time_split(df)
 
     print(
         f"Train steps: {train_df['step'].min()} -> "
@@ -102,6 +92,7 @@ def main() -> None:
 
     scale_pos_weight = negatives / max(positives, 1)
 
+    print(f"Temporal cutoff step: {cutoff_time}")
     print(f"Training rows: {len(X_train):,}")
     print(f"Testing rows:  {len(X_test):,}")
     print(f"Training fraud: {positives:,}")
