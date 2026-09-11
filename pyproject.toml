@@ -16,6 +16,7 @@ dependencies = [
     "pydantic",
     "pydantic-settings",
     "pyyaml",
+    "duckdb",
     "joblib",
 ]
 
