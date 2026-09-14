@@ -1,5 +1,8 @@
 # Production Fraud ML Platform
 
+[![CI](https://github.com/rajmyagentit-del/production-fraud-ml-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/rajmyagentit-del/production-fraud-ml-platform/actions/workflows/ci.yml)
+
+
 A production-style fraud detection ML platform focused on realistic ML engineering challenges including **temporal leakage, extreme class imbalance, behavioral feature engineering, model thresholding, API serving, testing, and public cloud deployment**.
 
 ## Live Demo
