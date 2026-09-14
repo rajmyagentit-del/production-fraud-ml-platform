@@ -46,3 +46,16 @@ def test_invalid_transaction_type():
     )
 
     assert response.status_code == 400
+
+
+def test_root():
+    response = client.get("/")
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert data["service"] == "Production Fraud ML API"
+    assert data["status"] == "online"
+    assert data["docs"] == "/docs"
+    assert data["decision_threshold"] == 0.98

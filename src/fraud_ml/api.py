@@ -147,6 +147,25 @@ def risk_level(probability: float) -> str:
     return "LOW"
 
 
+
+@app.get("/")
+def root():
+    return {
+        "service": "Production Fraud ML API",
+        "status": "online",
+        "description": (
+            "Real-time fraud scoring service using a "
+            "behavioral XGBoost model."
+        ),
+        "dataset": "PaySim synthetic fraud dataset",
+        "docs": "/docs",
+        "health": "/health",
+        "model_info": "/model-info",
+        "prediction_endpoint": "POST /predict",
+        "decision_threshold": DECISION_THRESHOLD,
+    }
+
+
 @app.get("/health")
 def health():
     return {
