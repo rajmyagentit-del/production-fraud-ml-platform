@@ -121,7 +121,19 @@ def test_lifecycle_endpoint_returns_model_lifecycle():
 
     assert (
         payload["promotion"]["decision"]
-        == "CANDIDATE_APPROVED_FOR_REVIEW"
+        == "KEEP_PRODUCTION"
+    )
+
+    reasons = payload["promotion"]["reasons"]
+
+    assert any(
+        "precision degradation" in reason
+        for reason in reasons
+    )
+
+    assert any(
+        "false-positive increase" in reason
+        for reason in reasons
     )
 
     assert payload["candidate_cutoff_step"] == 525

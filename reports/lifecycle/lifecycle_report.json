@@ -35,9 +35,12 @@
     "tp": 2362
   },
   "promotion": {
-    "promotion_recommended": true,
-    "decision": "CANDIDATE_APPROVED_FOR_REVIEW",
-    "reasons": []
+    "promotion_recommended": false,
+    "decision": "KEEP_PRODUCTION",
+    "reasons": [
+      "Candidate precision degradation exceeds the allowed limit.",
+      "Candidate false-positive increase exceeds the allowed limit."
+    ]
   },
   "production_model": "models/behavioral_xgboost.json",
   "candidate_model": "models/candidates/behavioral_xgboost_step_525.json"

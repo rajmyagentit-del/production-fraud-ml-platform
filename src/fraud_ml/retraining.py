@@ -81,6 +81,8 @@ def evaluate_candidate_promotion(
     candidate_metrics: dict,
     min_pr_auc_improvement: float = 0.0,
     max_recall_drop: float = 0.02,
+    max_precision_drop: float = 0.05,
+    max_false_positive_multiplier: float = 2.0,
 ) -> PromotionDecision:
     reasons: list[str] = []
 
@@ -98,12 +100,34 @@ def evaluate_candidate_promotion(
         candidate_metrics.get("recall", 0.0)
     )
 
+    production_precision = float(
+        production_metrics.get("precision", 0.0)
+    )
+    candidate_precision = float(
+        candidate_metrics.get("precision", 0.0)
+    )
+
+    production_fp = int(
+        production_metrics.get("fp", 0)
+    )
+    candidate_fp = int(
+        candidate_metrics.get("fp", 0)
+    )
+
     pr_auc_improvement = (
         candidate_pr_auc - production_pr_auc
     )
 
     recall_drop = (
         production_recall - candidate_recall
+    )
+
+    precision_drop = (
+        production_precision - candidate_precision
+    )
+
+    false_positive_multiplier = (
+        candidate_fp / max(production_fp, 1)
     )
 
     if pr_auc_improvement < min_pr_auc_improvement:
@@ -114,6 +138,16 @@ def evaluate_candidate_promotion(
     if recall_drop > max_recall_drop:
         reasons.append(
             "Candidate recall degradation exceeds the allowed limit."
+        )
+
+    if precision_drop > max_precision_drop:
+        reasons.append(
+            "Candidate precision degradation exceeds the allowed limit."
+        )
+
+    if false_positive_multiplier > max_false_positive_multiplier:
+        reasons.append(
+            "Candidate false-positive increase exceeds the allowed limit."
         )
 
     promotion_recommended = not reasons

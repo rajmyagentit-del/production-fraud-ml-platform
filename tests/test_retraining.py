@@ -126,3 +126,59 @@ def test_candidate_rejected_for_excessive_recall_drop():
 
     assert decision.promotion_recommended is False
     assert decision.decision == "KEEP_PRODUCTION"
+
+
+def test_candidate_rejected_for_excessive_precision_drop():
+    production = {
+        "pr_auc": 0.97,
+        "recall": 0.88,
+        "precision": 0.96,
+        "fp": 100,
+    }
+
+    candidate = {
+        "pr_auc": 0.98,
+        "recall": 0.95,
+        "precision": 0.87,
+        "fp": 120,
+    }
+
+    decision = evaluate_candidate_promotion(
+        production,
+        candidate,
+    )
+
+    assert decision.promotion_recommended is False
+    assert decision.decision == "KEEP_PRODUCTION"
+    assert any(
+        "precision degradation" in reason
+        for reason in decision.reasons
+    )
+
+
+def test_candidate_rejected_for_false_positive_spike():
+    production = {
+        "pr_auc": 0.97,
+        "recall": 0.88,
+        "precision": 0.95,
+        "fp": 75,
+    }
+
+    candidate = {
+        "pr_auc": 0.98,
+        "recall": 0.94,
+        "precision": 0.93,
+        "fp": 250,
+    }
+
+    decision = evaluate_candidate_promotion(
+        production,
+        candidate,
+    )
+
+    assert decision.promotion_recommended is False
+    assert decision.decision == "KEEP_PRODUCTION"
+    assert any(
+        "false-positive increase" in reason
+        for reason in decision.reasons
+    )

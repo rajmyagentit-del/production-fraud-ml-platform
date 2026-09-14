@@ -894,9 +894,10 @@ async function loadLifecycleStatus(){
       '</div>'+
 
       '<div class="info-box">'+
-      '<strong>Governance:</strong> The challenger passed the model-quality '+
-      'gate and is approved for review. It has not replaced the deployed '+
-      'production model. Promotion remains a separate controlled decision.'+
+      '<strong>Governance:</strong> The challenger improves fraud capture, '+
+      'but it fails the production promotion gate because precision '+
+      'degrades and false positives increase beyond configured limits. '+
+      'The production model remains unchanged.'+
       '</div>';
 
   }catch(err){
