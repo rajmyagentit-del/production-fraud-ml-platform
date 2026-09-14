@@ -64,6 +64,10 @@ def test_root():
     assert "/drift" in html
     assert "Model &amp; Data Drift Monitoring" in html
     assert 'fetch("/drift"' in html
+    assert "Held-out PR-AUC" in html
+    assert "Fraud Rate Shift" in html
+    assert "Interpretation:" in html
+    assert "28 Passed" in html
 
 
 def test_drift_endpoint():
@@ -72,7 +76,26 @@ def test_drift_endpoint():
     assert response.status_code == 200
     payload = response.json()
 
-    assert payload["overall_severity"] == "LOW"
+    assert payload["overall_severity"] == "HIGH"
+
+    metrics = {
+        metric["feature"]: metric
+        for metric in payload["metrics"]
+    }
+
+    assert "model_fraud_probability" in metrics
+    assert (
+        metrics["model_fraud_probability"]["severity"]
+        == "HIGH"
+    )
+
+    assert "step" in metrics
+    assert metrics["step"]["severity"] == "HIGH"
+
+    assert "day" in metrics
+    assert metrics["day"]["severity"] == "HIGH"
+
+    assert payload["label_monitoring"]["fraud_rate_ratio"] > 4.0
     assert payload["reference_rows"] == 5069097
     assert payload["current_rows"] == 1293523
     assert payload["reference_window"] == "step < 355"

@@ -1,7 +1,7 @@
 {
   "reference_rows": 5069097,
   "current_rows": 1293523,
-  "overall_severity": "LOW",
+  "overall_severity": "HIGH",
   "metrics": [
     {
       "feature": "amount",
@@ -64,12 +64,64 @@
       "severity": "LOW"
     },
     {
+      "feature": "step",
+      "metric": "PSI",
+      "value": 12.365809,
+      "severity": "HIGH"
+    },
+    {
+      "feature": "hour",
+      "metric": "PSI",
+      "value": 0.060153,
+      "severity": "LOW"
+    },
+    {
+      "feature": "day",
+      "metric": "PSI",
+      "value": 11.799554,
+      "severity": "HIGH"
+    },
+    {
+      "feature": "amount_to_orig_balance",
+      "metric": "PSI",
+      "value": 0.001929,
+      "severity": "LOW"
+    },
+    {
       "feature": "type",
       "metric": "total_variation",
       "value": 0.013859,
       "severity": "LOW"
+    },
+    {
+      "feature": "model_fraud_probability",
+      "metric": "PSI",
+      "value": 0.755221,
+      "severity": "HIGH"
     }
   ],
+  "label_monitoring": {
+    "reference_fraud_rate": 0.00078022,
+    "current_fraud_rate": 0.00329179,
+    "fraud_rate_ratio": 4.2191
+  },
+  "heldout_performance": {
+    "evaluation_window": "held_out_current_window",
+    "threshold": 0.98,
+    "rows": 1293523,
+    "fraud_cases": 4258,
+    "roc_auc": 0.999906,
+    "pr_auc": 0.974028,
+    "precision": 0.929336,
+    "recall": 0.877172,
+    "f1": 0.902501,
+    "true_negatives": 1288981,
+    "false_positives": 284,
+    "false_negatives": 523,
+    "true_positives": 3735
+  },
+  "model_score_reference_rows": 5069097,
+  "model_score_current_rows": 1293523,
   "reference_window": "step < 355",
   "current_window": "step >= 355",
   "reference_step_max": 354,

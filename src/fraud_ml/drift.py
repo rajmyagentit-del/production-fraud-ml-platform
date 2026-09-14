@@ -160,6 +160,23 @@ def build_drift_report(
     }
 
 
+def calculate_prediction_score_drift(
+    reference_scores: pd.Series,
+    current_scores: pd.Series,
+) -> DriftMetric:
+    value = population_stability_index(
+        reference_scores,
+        current_scores,
+    )
+
+    return DriftMetric(
+        feature="model_fraud_probability",
+        metric="PSI",
+        value=round(value, 6),
+        severity=severity_from_value(value),
+    )
+
+
 def save_report(report: dict, path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(report, indent=2))

@@ -3,6 +3,7 @@ import pandas as pd
 
 from fraud_ml.drift import (
     build_drift_report,
+    calculate_prediction_score_drift,
     categorical_total_variation,
     population_stability_index,
     severity_from_value,
@@ -67,3 +68,22 @@ def test_drift_report_detects_high_overall_severity():
     assert report["current_rows"] == 1000
     assert report["overall_severity"] == "HIGH"
     assert len(report["metrics"]) == 2
+
+
+def test_prediction_score_drift_detects_shift():
+    reference = pd.Series(
+        np.linspace(0.00, 0.20, 1000)
+    )
+    current = pd.Series(
+        np.linspace(0.80, 1.00, 1000)
+    )
+
+    metric = calculate_prediction_score_drift(
+        reference,
+        current,
+    )
+
+    assert metric.feature == "model_fraud_probability"
+    assert metric.metric == "PSI"
+    assert metric.value >= 0.25
+    assert metric.severity == "HIGH"

@@ -436,7 +436,7 @@ summary{
 
   <div class="metric-card">
     <div class="metric-label">Automated Tests</div>
-    <div class="metric-value">27 Passed</div>
+    <div class="metric-value">28 Passed</div>
   </div>
 </section>
 
@@ -570,9 +570,11 @@ Analyze Fraud Risk
 <section class="card drift-card">
 <h2>Model &amp; Data Drift Monitoring</h2>
 <p class="helper">
-  Chronological distribution monitoring compares the model reference period
-  with later PaySim transactions. PSI is used for numerical features and
-  total variation for transaction type.
+  Chronological monitoring compares the model reference period with later
+  PaySim transactions. PSI is used for numerical features and model-score
+  distributions, while total variation is used for transaction type.
+  Held-out model performance is reported separately so distribution drift
+  is not confused with model failure.
 </p>
 
 <div id="drift-status" class="result-empty">
@@ -744,10 +746,18 @@ async function loadDriftStatus(){
       '</tr>'
     ).join("");
 
+    const perf=report.heldout_performance || {};
+    const labels=report.label_monitoring || {};
+
+    const scoreMetric=report.metrics.find(
+      metric => metric.feature==="model_fraud_probability"
+    );
+
     container.className="";
     container.innerHTML=
       '<div class="risk-badge '+report.overall_severity+'">'+
       report.overall_severity+' OVERALL DRIFT</div>'+
+
       '<div class="drift-summary">'+
       '<div><span>Reference Rows</span><strong>'+
       report.reference_rows.toLocaleString()+'</strong></div>'+
@@ -757,6 +767,38 @@ async function loadDriftStatus(){
       report.reference_window+' → '+report.current_window+
       '</strong></div>'+
       '</div>'+
+
+      '<div class="drift-summary">'+
+      '<div><span>Held-out PR-AUC</span><strong>'+
+      Number(perf.pr_auc || 0).toFixed(6)+'</strong></div>'+
+      '<div><span>Precision @ 0.98</span><strong>'+
+      (Number(perf.precision || 0)*100).toFixed(2)+'%</strong></div>'+
+      '<div><span>Recall @ 0.98</span><strong>'+
+      (Number(perf.recall || 0)*100).toFixed(2)+'%</strong></div>'+
+      '<div><span>F1 @ 0.98</span><strong>'+
+      Number(perf.f1 || 0).toFixed(6)+'</strong></div>'+
+      '</div>'+
+
+      '<div class="drift-summary">'+
+      '<div><span>Fraud Rate Shift</span><strong>'+
+      Number(labels.fraud_rate_ratio || 0).toFixed(2)+'×</strong></div>'+
+      '<div><span>Reference Fraud Rate</span><strong>'+
+      (Number(labels.reference_fraud_rate || 0)*100).toFixed(4)+'%</strong></div>'+
+      '<div><span>Current Fraud Rate</span><strong>'+
+      (Number(labels.current_fraud_rate || 0)*100).toFixed(4)+'%</strong></div>'+
+      '<div><span>Model Score PSI</span><strong>'+
+      (scoreMetric ? scoreMetric.value : "N/A")+
+      '</strong></div>'+
+      '</div>'+
+
+      '<div class="result-empty">'+
+      '<strong>Interpretation:</strong> High distribution drift is present, '+
+      'especially in absolute temporal features such as step and day, and '+
+      'the fraud prevalence is higher in the later period. However, the model '+
+      'continues to show strong held-out discrimination and threshold performance. '+
+      'Model-score drift therefore does not by itself mean the model has failed.'+
+      '</div>'+
+
       '<div class="drift-scroll">'+
       '<table class="drift-table">'+
       '<thead><tr><th>Feature</th><th>Metric</th>'+
