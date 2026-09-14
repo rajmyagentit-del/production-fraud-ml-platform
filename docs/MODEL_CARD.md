@@ -239,7 +239,7 @@ Important monitoring signals include:
 - latency and API failures
 - precision and recall when delayed labels become available
 
-Drift monitoring and automated retraining are planned extensions of this project and are not yet claimed as implemented capabilities.
+Drift monitoring is implemented using chronological reference/current windows, numerical PSI, transaction-type total variation, model-score PSI, label-shift monitoring, and held-out performance evaluation. Automated retraining remains a planned extension.
 
 ---
 

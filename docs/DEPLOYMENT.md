@@ -247,7 +247,7 @@ Current limitations include:
 - no production rate limiting or abuse controls
 - no online behavioral feature store
 - no production transaction database
-- no model drift monitoring yet
+- drift monitoring is available through the deployed `/drift` endpoint and public dashboard
 - no automated retraining pipeline yet
 - no formal model registry promotion workflow yet
 

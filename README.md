@@ -332,7 +332,7 @@ For the complete reproduction walkthrough, see [Local Setup](docs/LOCAL_SETUP.md
 - PaySim is synthetic; results are not evidence of performance on real customer transactions.
 - behavioral history is currently supplied to the public inference API rather than retrieved from an online feature store
 - the public deployment does not currently include production authentication or rate limiting
-- model and data drift monitoring has not yet been implemented
+- model and data drift monitoring is implemented with chronological reference/current windows, feature PSI, transaction-type total variation, model-score PSI, label-shift tracking, and held-out performance reporting
 - automated retraining has not yet been implemented
 
 These limitations are stated explicitly to separate demonstrated capabilities from future engineering work.
@@ -341,6 +341,6 @@ These limitations are stated explicitly to separate demonstrated capabilities fr
 
 ## Next Major Milestone
 
-The next implementation milestone is model and data drift monitoring.
+The current platform includes model and data drift monitoring. The next major milestone is automated retraining and model lifecycle orchestration.
 
 The README and supporting documentation will be updated after that capability is implemented, tested, and verified.

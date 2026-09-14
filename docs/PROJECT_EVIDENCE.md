@@ -125,10 +125,53 @@ Public HTTPS Inference
 
 ## 10. Current Limitations
 
-Planned next:
+The platform now includes a recruiter-facing dashboard, automated CI, public deployment, and model/data drift monitoring.
 
-- recruiter-facing dashboard
-- GitHub Actions CI/CD
-- drift monitoring
-- automated retraining
+Current limitations and future work include:
+
+- automated retraining and model lifecycle orchestration
+- stronger online behavioral feature serving
 - graph-based fraud detection
+- production authentication and authorization
+- persistent production monitoring infrastructure
+
+---
+
+## 11. Verified Model and Data Drift Monitoring
+
+The deployed platform now exposes model and data monitoring through the public dashboard and `/drift` API endpoint.
+
+Verified chronological monitoring windows:
+
+- Reference window: `step < 355`
+- Current window: `step >= 355`
+- Reference rows: 5,069,097
+- Current rows: 1,293,523
+
+Verified monitoring results:
+
+- Overall drift severity: `HIGH`
+- Model-score PSI: `0.755221`
+- Fraud-rate shift: `4.2191x`
+- Reference fraud rate: `0.0780%`
+- Current fraud rate: `0.3292%`
+- Step PSI: `12.365809`
+- Day PSI: `11.799554`
+
+Held-out current-window model performance:
+
+- PR-AUC: `0.974028`
+- ROC-AUC: `0.999906`
+- Precision at threshold 0.98: `0.929336`
+- Recall at threshold 0.98: `0.877172`
+- F1 at threshold 0.98: `0.902501`
+
+The monitoring layer intentionally separates distribution drift from model-performance evaluation. High drift therefore does not automatically imply model failure.
+
+Public demo:
+
+`https://production-fraud-ml-platform.onrender.com`
+
+Public drift endpoint:
+
+`https://production-fraud-ml-platform.onrender.com/drift`

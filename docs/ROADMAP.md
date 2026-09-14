@@ -33,14 +33,18 @@ Detailed documentation for future capabilities will be added only after those ca
 - API documentation
 - deployment documentation
 - troubleshooting documentation
+- model and data drift monitoring
+- model-score distribution monitoring
+- label-shift monitoring
+- held-out performance monitoring
 
 ---
 
 ## Next Major Milestone
 
-Model and data drift monitoring.
+Automated retraining and model lifecycle orchestration.
 
-Implementation details, tests, metrics, screenshots, and documentation will be added after this milestone is built and verified.
+The next milestone will focus on detecting when retraining should be considered, versioning retraining runs, validating candidate models, and preventing automatic promotion without evaluation.
 
 ---
 

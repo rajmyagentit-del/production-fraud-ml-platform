@@ -341,7 +341,7 @@ Planned engineering extensions include:
 - graph-based fraud signals
 - production-oriented model lifecycle controls
 
-These are roadmap items and should not be interpreted as already implemented capabilities.
+Drift and performance monitoring are now implemented. Automated retraining and broader lifecycle orchestration remain roadmap items.
 
 ---
 
