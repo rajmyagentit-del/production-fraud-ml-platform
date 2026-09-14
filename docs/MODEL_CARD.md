@@ -239,7 +239,9 @@ Important monitoring signals include:
 - latency and API failures
 - precision and recall when delayed labels become available
 
-Drift monitoring is implemented using chronological reference/current windows, numerical PSI, transaction-type total variation, model-score PSI, label-shift monitoring, and held-out performance evaluation. Automated retraining remains a planned extension.
+Drift monitoring is implemented using chronological reference/current windows, numerical PSI, transaction-type total variation, model-score PSI, label-shift monitoring, and held-out performance evaluation.
+
+The platform also implements drift-triggered retraining orchestration and champion/challenger evaluation. Candidate models are evaluated on a future chronological window using PR-AUC, precision, recall, F1, and confusion-matrix tradeoffs. Automatic promotion is disabled; candidates that violate configured precision or false-positive limits remain out of production even when recall or PR-AUC improves.
 
 ---
 

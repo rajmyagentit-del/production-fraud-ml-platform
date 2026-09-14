@@ -248,8 +248,11 @@ Current limitations include:
 - no online behavioral feature store
 - no production transaction database
 - drift monitoring is available through the deployed `/drift` endpoint and public dashboard
-- no automated retraining pipeline yet
-- no formal model registry promotion workflow yet
+- lifecycle and retraining decisions are available through the deployed `/lifecycle` endpoint and dashboard
+- drift-triggered challenger training and champion/challenger evaluation are implemented
+- automatic model promotion is intentionally disabled
+- the evaluated challenger artifact is not part of the deployed production model bundle
+- no formal model registry, approval workflow, or automated rollback mechanism is implemented yet
 
 These limitations are documented deliberately so that implemented capabilities are clearly separated from roadmap work.
 

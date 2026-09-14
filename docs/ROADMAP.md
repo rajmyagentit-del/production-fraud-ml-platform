@@ -37,19 +37,31 @@ Detailed documentation for future capabilities will be added only after those ca
 - model-score distribution monitoring
 - label-shift monitoring
 - held-out performance monitoring
+- drift-triggered retraining policy
+- chronological challenger model training
+- champion/challenger evaluation on a shared future window
+- promotion gating using PR-AUC, recall, precision, and false-positive controls
+- explicit prevention of automatic production promotion
 
 ---
 
 ## Next Major Milestone
 
-Automated retraining and model lifecycle orchestration.
+Controlled model registry, approval, and rollback workflow.
 
-The next milestone will focus on detecting when retraining should be considered, versioning retraining runs, validating candidate models, and preventing automatic promotion without evaluation.
+The next milestone will focus on:
+
+- explicit model version management
+- controlled human approval before production promotion
+- auditable promotion decisions
+- safe production model replacement
+- rollback protection
+- preserving previous champion versions
 
 ---
 
 ## Future Work
 
-Future production-oriented extensions may include automated retraining, stronger online behavioral feature serving, graph-based fraud detection, and additional observability.
+Future production-oriented extensions may include stronger online behavioral feature serving, graph-based fraud detection, production authentication, persistent observability infrastructure, and richer model registry integration.
 
 These are roadmap items only and are not claimed as currently implemented capabilities.

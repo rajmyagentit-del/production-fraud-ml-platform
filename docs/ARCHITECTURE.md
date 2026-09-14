@@ -332,16 +332,24 @@ Retraining Pipeline
 Model Validation and Deployment
 ```
 
-Planned engineering extensions include:
+Implemented lifecycle capabilities now include:
 
 - feature and prediction drift monitoring
-- automated retraining workflows
-- stronger online behavioral feature computation
-- model and data observability
-- graph-based fraud signals
-- production-oriented model lifecycle controls
+- drift-triggered retraining decisions
+- chronological challenger training
+- champion/challenger evaluation on the same untouched future window
+- precision, recall, PR-AUC, and false-positive promotion gates
+- explicit prevention of automatic model promotion
 
-Drift and performance monitoring are now implemented. Automated retraining and broader lifecycle orchestration remain roadmap items.
+Remaining engineering extensions include:
+
+- stronger online behavioral feature computation
+- formal model registry and version management
+- controlled production promotion and rollback
+- graph-based fraud signals
+- additional production observability
+
+The lifecycle layer deliberately separates retraining from deployment. A challenger may improve fraud capture while still being rejected when operational tradeoffs such as precision loss or false-positive growth exceed configured limits.
 
 ---
 

@@ -333,7 +333,9 @@ For the complete reproduction walkthrough, see [Local Setup](docs/LOCAL_SETUP.md
 - behavioral history is currently supplied to the public inference API rather than retrieved from an online feature store
 - the public deployment does not currently include production authentication or rate limiting
 - model and data drift monitoring is implemented with chronological reference/current windows, feature PSI, transaction-type total variation, model-score PSI, label-shift tracking, and held-out performance reporting
-- automated retraining has not yet been implemented
+- drift-triggered retraining orchestration and champion/challenger evaluation are implemented
+- automatic production model promotion is intentionally disabled
+- no formal model registry, approval workflow, or automated rollback mechanism is implemented yet
 
 These limitations are stated explicitly to separate demonstrated capabilities from future engineering work.
 
@@ -341,6 +343,6 @@ These limitations are stated explicitly to separate demonstrated capabilities fr
 
 ## Next Major Milestone
 
-The current platform includes model and data drift monitoring. The next major milestone is automated retraining and model lifecycle orchestration.
+The platform now includes drift-triggered retraining orchestration, chronological challenger training, champion/challenger evaluation on the same future window, and promotion governance.
 
-The README and supporting documentation will be updated after that capability is implemented, tested, and verified.
+The next major milestone is a controlled model registry and promotion workflow with explicit approval, model versioning, rollback protection, and auditable deployment decisions.

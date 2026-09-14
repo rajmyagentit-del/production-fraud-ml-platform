@@ -125,15 +125,16 @@ Public HTTPS Inference
 
 ## 10. Current Limitations
 
-The platform now includes a recruiter-facing dashboard, automated CI, public deployment, and model/data drift monitoring.
+The platform now includes a recruiter-facing dashboard, automated CI, public deployment, model/data drift monitoring, and drift-triggered model lifecycle orchestration.
 
 Current limitations and future work include:
 
-- automated retraining and model lifecycle orchestration
+- no formal model registry or controlled promotion workflow yet
 - stronger online behavioral feature serving
 - graph-based fraud detection
 - production authentication and authorization
 - persistent production monitoring infrastructure
+- automated rollback and model-version governance
 
 ---
 
@@ -175,3 +176,67 @@ Public demo:
 Public drift endpoint:
 
 `https://production-fraud-ml-platform.onrender.com/drift`
+
+
+---
+
+## 12. Verified Model Lifecycle and Challenger Governance
+
+The deployed platform now exposes lifecycle state through the public dashboard and `/lifecycle` API endpoint.
+
+Verified lifecycle configuration:
+
+- Retraining recommended: `true`
+- Automatic promotion allowed: `false`
+- Lifecycle severity: `HIGH`
+- Challenger cutoff step: `525`
+- Training window: `step < 525`
+- Evaluation window: `step >= 525`
+- Decision threshold: `0.98`
+
+Champion performance on the shared future evaluation window:
+
+- ROC-AUC: `0.999880`
+- PR-AUC: `0.986797`
+- Precision: `0.964052`
+- Recall: `0.871308`
+- F1: `0.915337`
+- True negatives: `256827`
+- False positives: `77`
+- False negatives: `305`
+- True positives: `2065`
+
+Challenger performance on the same future evaluation window:
+
+- ROC-AUC: `0.999911`
+- PR-AUC: `0.990135`
+- Precision: `0.882991`
+- Recall: `0.996624`
+- F1: `0.936373`
+- True negatives: `256591`
+- False positives: `313`
+- False negatives: `8`
+- True positives: `2362`
+
+The challenger improved PR-AUC, recall, F1, and false-negative detection, but it also reduced precision and increased false positives substantially.
+
+The promotion gate therefore returned:
+
+`KEEP_PRODUCTION`
+
+Verified rejection reasons:
+
+- Candidate precision degradation exceeds the allowed limit.
+- Candidate false-positive increase exceeds the allowed limit.
+
+This demonstrates that retraining and model promotion are intentionally separated. The platform does not replace the deployed champion solely because a challenger improves recall or PR-AUC.
+
+The production model remained unchanged.
+
+Public lifecycle endpoint:
+
+`https://production-fraud-ml-platform.onrender.com/lifecycle`
+
+Verified deployment commit:
+
+`9e01336` — `feat: strengthen challenger promotion governance`
