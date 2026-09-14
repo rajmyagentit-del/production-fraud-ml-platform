@@ -414,6 +414,7 @@ summary{
     <a href="/docs">Swagger API</a>
     <a href="/model-info">Model Info</a>
     <a href="/drift">Drift API</a>
+    <a href="/lifecycle">Lifecycle API</a>
     <a href="/health">Health</a>
   </div>
 </section>
@@ -436,7 +437,7 @@ summary{
 
   <div class="metric-card">
     <div class="metric-label">Automated Tests</div>
-    <div class="metric-value">28 Passed</div>
+    <div class="metric-value">35 Passed</div>
   </div>
 </section>
 
@@ -579,6 +580,20 @@ Analyze Fraud Risk
 
 <div id="drift-status" class="result-empty">
   Loading drift monitoring report...
+</div>
+</section>
+
+<section class="card drift-card">
+<h2>Model Lifecycle &amp; Retraining</h2>
+<p class="helper">
+  Drift-triggered retraining trains a challenger model separately from the
+  production model. Champion and challenger are evaluated on the same
+  untouched future window before the challenger can be approved for review.
+  Production replacement is never automatic.
+</p>
+
+<div id="lifecycle-status" class="result-empty">
+  Loading model lifecycle report...
 </div>
 </section>
 
@@ -811,6 +826,87 @@ async function loadDriftStatus(){
   }
 }
 
+async function loadLifecycleStatus(){
+  const container=document.getElementById("lifecycle-status");
+
+  try{
+    const response=await fetch("/lifecycle");
+    const report=await response.json();
+
+    if(!response.ok){
+      throw new Error(
+        report.detail || "Lifecycle report unavailable"
+      );
+    }
+
+    const champion=report.champion_metrics || {};
+    const candidate=report.candidate_metrics || {};
+    const trigger=report.trigger || {};
+    const promotion=report.promotion || {};
+
+    const candidateStatus=(
+      promotion.decision || "UNKNOWN"
+    ).replaceAll("_"," ");
+
+    container.className="";
+    container.innerHTML=
+      '<div class="risk-badge '+trigger.severity+'">'+
+      trigger.severity+' RETRAINING TRIGGER</div>'+
+
+      '<div class="drift-summary">'+
+      '<div><span>Candidate Status</span><strong>'+
+      candidateStatus+'</strong></div>'+
+      '<div><span>Automatic Promotion</span><strong>'+
+      (trigger.auto_promotion_allowed ? "ENABLED" : "DISABLED")+
+      '</strong></div>'+
+      '<div><span>Evaluation Window</span><strong>'+
+      report.evaluation_window+'</strong></div>'+
+      '</div>'+
+
+      '<div class="drift-summary">'+
+      '<div><span>Champion PR-AUC</span><strong>'+
+      Number(champion.pr_auc || 0).toFixed(6)+'</strong></div>'+
+      '<div><span>Candidate PR-AUC</span><strong>'+
+      Number(candidate.pr_auc || 0).toFixed(6)+'</strong></div>'+
+      '<div><span>Champion Recall</span><strong>'+
+      (Number(champion.recall || 0)*100).toFixed(2)+'%</strong></div>'+
+      '<div><span>Candidate Recall</span><strong>'+
+      (Number(candidate.recall || 0)*100).toFixed(2)+'%</strong></div>'+
+      '<div><span>Champion Precision</span><strong>'+
+      (Number(champion.precision || 0)*100).toFixed(2)+'%</strong></div>'+
+      '<div><span>Candidate Precision</span><strong>'+
+      (Number(candidate.precision || 0)*100).toFixed(2)+'%</strong></div>'+
+      '</div>'+
+
+      '<div class="drift-summary">'+
+      '<div><span>Champion F1</span><strong>'+
+      Number(champion.f1 || 0).toFixed(6)+'</strong></div>'+
+      '<div><span>Candidate F1</span><strong>'+
+      Number(candidate.f1 || 0).toFixed(6)+'</strong></div>'+
+      '<div><span>Champion False Negatives</span><strong>'+
+      Number(champion.fn || 0).toLocaleString()+'</strong></div>'+
+      '<div><span>Candidate False Negatives</span><strong>'+
+      Number(candidate.fn || 0).toLocaleString()+'</strong></div>'+
+      '<div><span>Champion False Positives</span><strong>'+
+      Number(champion.fp || 0).toLocaleString()+'</strong></div>'+
+      '<div><span>Candidate False Positives</span><strong>'+
+      Number(candidate.fp || 0).toLocaleString()+'</strong></div>'+
+      '</div>'+
+
+      '<div class="info-box">'+
+      '<strong>Governance:</strong> The challenger passed the model-quality '+
+      'gate and is approved for review. It has not replaced the deployed '+
+      'production model. Promotion remains a separate controlled decision.'+
+      '</div>';
+
+  }catch(err){
+    container.className="error";
+    container.textContent=
+      "Unable to load lifecycle report: "+err.message;
+  }
+}
+
+loadLifecycleStatus();
 loadDriftStatus();
 loadFraudExample();
 

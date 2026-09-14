@@ -64,10 +64,15 @@ def test_root():
     assert "/drift" in html
     assert "Model &amp; Data Drift Monitoring" in html
     assert 'fetch("/drift"' in html
+    assert "/lifecycle" in html
+    assert "Model Lifecycle &amp; Retraining" in html
+    assert 'fetch("/lifecycle"' in html
+    assert "Candidate Status" in html
+    assert "Automatic Promotion" in html
     assert "Held-out PR-AUC" in html
     assert "Fraud Rate Shift" in html
     assert "Interpretation:" in html
-    assert "28 Passed" in html
+    assert "35 Passed" in html
 
 
 def test_drift_endpoint():
@@ -102,3 +107,32 @@ def test_drift_endpoint():
     assert payload["current_window"] == "step >= 355"
     assert isinstance(payload["metrics"], list)
     assert len(payload["metrics"]) >= 1
+
+
+def test_lifecycle_endpoint_returns_model_lifecycle():
+    response = client.get("/lifecycle")
+
+    assert response.status_code == 200
+
+    payload = response.json()
+
+    assert payload["trigger"]["retraining_recommended"] is True
+    assert payload["trigger"]["auto_promotion_allowed"] is False
+
+    assert (
+        payload["promotion"]["decision"]
+        == "CANDIDATE_APPROVED_FOR_REVIEW"
+    )
+
+    assert payload["candidate_cutoff_step"] == 525
+    assert payload["evaluation_window"] == "step >= 525"
+
+    assert (
+        payload["candidate_metrics"]["pr_auc"]
+        > payload["champion_metrics"]["pr_auc"]
+    )
+
+    assert (
+        payload["candidate_metrics"]["fn"]
+        < payload["champion_metrics"]["fn"]
+    )

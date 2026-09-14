@@ -11,6 +11,9 @@ from xgboost import XGBClassifier
 
 MODEL_PATH = Path("models/behavioral_xgboost.json")
 DRIFT_REPORT_PATH = Path("reports/drift/drift_report.json")
+LIFECYCLE_REPORT_PATH = Path(
+    "reports/lifecycle/lifecycle_report.json"
+)
 DECISION_THRESHOLD = 0.98
 
 app = FastAPI(
@@ -198,6 +201,27 @@ def drift_status():
         raise HTTPException(
             status_code=500,
             detail=f"Failed to load drift report: {exc}",
+        ) from exc
+
+
+@app.get("/lifecycle")
+def lifecycle_status():
+    if not LIFECYCLE_REPORT_PATH.exists():
+        raise HTTPException(
+            status_code=503,
+            detail="Lifecycle report is not available",
+        )
+
+    try:
+        return json.loads(
+            LIFECYCLE_REPORT_PATH.read_text(
+                encoding="utf-8"
+            )
+        )
+    except Exception as exc:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to load lifecycle report: {exc}",
         ) from exc
 
 
