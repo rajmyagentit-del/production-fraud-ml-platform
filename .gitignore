@@ -22,6 +22,7 @@ data/sample/*
 # Models
 models/*
 !models/.gitkeep
+!models/behavioral_xgboost.json
 
 # MLflow
 mlruns/
