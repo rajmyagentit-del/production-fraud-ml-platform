@@ -320,6 +320,54 @@ summary{
   margin-bottom:4px;
 }
 
+.drift-card{
+  margin-top:20px;
+}
+
+.drift-summary{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+  margin:18px 0;
+}
+
+.drift-summary div{
+  background:#091426;
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:14px;
+}
+
+.drift-summary span{
+  display:block;
+  color:var(--muted);
+  font-size:12px;
+  margin-bottom:6px;
+}
+
+.drift-table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:13px;
+}
+
+.drift-table th,
+.drift-table td{
+  padding:11px 9px;
+  border-top:1px solid var(--border);
+  text-align:left;
+}
+
+.drift-table th{
+  color:var(--muted);
+  font-size:11px;
+  text-transform:uppercase;
+}
+
+.drift-scroll{
+  overflow-x:auto;
+}
+
 .error{
   color:var(--red);
   font-weight:700;
@@ -365,6 +413,7 @@ summary{
   <div class="links">
     <a href="/docs">Swagger API</a>
     <a href="/model-info">Model Info</a>
+    <a href="/drift">Drift API</a>
     <a href="/health">Health</a>
   </div>
 </section>
@@ -387,7 +436,7 @@ summary{
 
   <div class="metric-card">
     <div class="metric-label">Automated Tests</div>
-    <div class="metric-value">21 Passed</div>
+    <div class="metric-value">27 Passed</div>
   </div>
 </section>
 
@@ -516,6 +565,19 @@ Analyze Fraud Risk
 
 </div>
 
+</section>
+
+<section class="card drift-card">
+<h2>Model &amp; Data Drift Monitoring</h2>
+<p class="helper">
+  Chronological distribution monitoring compares the model reference period
+  with later PaySim transactions. PSI is used for numerical features and
+  total variation for transaction type.
+</p>
+
+<div id="drift-status" class="result-empty">
+  Loading drift monitoring report...
+</div>
 </section>
 
 <section class="stack">
@@ -661,6 +723,53 @@ btn.textContent="Analyze Fraud Risk";
 
 });
 
+async function loadDriftStatus(){
+  const container=document.getElementById("drift-status");
+
+  try{
+    const response=await fetch("/drift");
+    const report=await response.json();
+
+    if(!response.ok){
+      throw new Error(report.detail || "Drift report unavailable");
+    }
+
+    const rows=report.metrics.map(metric =>
+      '<tr>'+
+      '<td>'+metric.feature+'</td>'+
+      '<td>'+metric.metric+'</td>'+
+      '<td>'+metric.value+'</td>'+
+      '<td><span class="risk-badge '+metric.severity+'">'+
+      metric.severity+'</span></td>'+
+      '</tr>'
+    ).join("");
+
+    container.className="";
+    container.innerHTML=
+      '<div class="risk-badge '+report.overall_severity+'">'+
+      report.overall_severity+' OVERALL DRIFT</div>'+
+      '<div class="drift-summary">'+
+      '<div><span>Reference Rows</span><strong>'+
+      report.reference_rows.toLocaleString()+'</strong></div>'+
+      '<div><span>Current Rows</span><strong>'+
+      report.current_rows.toLocaleString()+'</strong></div>'+
+      '<div><span>Windows</span><strong>'+
+      report.reference_window+' → '+report.current_window+
+      '</strong></div>'+
+      '</div>'+
+      '<div class="drift-scroll">'+
+      '<table class="drift-table">'+
+      '<thead><tr><th>Feature</th><th>Metric</th>'+
+      '<th>Value</th><th>Severity</th></tr></thead>'+
+      '<tbody>'+rows+'</tbody></table></div>';
+
+  }catch(err){
+    container.className="error";
+    container.textContent="Unable to load drift report: "+err.message;
+  }
+}
+
+loadDriftStatus();
 loadFraudExample();
 
 </script>

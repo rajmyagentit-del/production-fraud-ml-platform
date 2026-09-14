@@ -1,0 +1,77 @@
+{
+  "reference_rows": 5069097,
+  "current_rows": 1293523,
+  "overall_severity": "LOW",
+  "metrics": [
+    {
+      "feature": "amount",
+      "metric": "PSI",
+      "value": 0.001511,
+      "severity": "LOW"
+    },
+    {
+      "feature": "oldbalanceOrg",
+      "metric": "PSI",
+      "value": 0.00087,
+      "severity": "LOW"
+    },
+    {
+      "feature": "oldbalanceDest",
+      "metric": "PSI",
+      "value": 0.00158,
+      "severity": "LOW"
+    },
+    {
+      "feature": "orig_prior_txn_count",
+      "metric": "PSI",
+      "value": 0.00108,
+      "severity": "LOW"
+    },
+    {
+      "feature": "orig_prior_amount_mean",
+      "metric": "PSI",
+      "value": 3e-06,
+      "severity": "LOW"
+    },
+    {
+      "feature": "orig_steps_since_prev_txn",
+      "metric": "PSI",
+      "value": 0.00375,
+      "severity": "LOW"
+    },
+    {
+      "feature": "orig_account_age_steps",
+      "metric": "PSI",
+      "value": 0.003755,
+      "severity": "LOW"
+    },
+    {
+      "feature": "amount_vs_prior_mean",
+      "metric": "PSI",
+      "value": 0.0,
+      "severity": "LOW"
+    },
+    {
+      "feature": "orig_dest_prior_txn_count",
+      "metric": "PSI",
+      "value": 0.0,
+      "severity": "LOW"
+    },
+    {
+      "feature": "dest_seen_before",
+      "metric": "PSI",
+      "value": 0.0,
+      "severity": "LOW"
+    },
+    {
+      "feature": "type",
+      "metric": "total_variation",
+      "value": 0.013859,
+      "severity": "LOW"
+    }
+  ],
+  "reference_window": "step < 355",
+  "current_window": "step >= 355",
+  "reference_step_max": 354,
+  "current_step_min": 355
+}

@@ -61,3 +61,21 @@ def test_root():
     assert "/docs" in html
     assert "/model-info" in html
     assert "/health" in html
+    assert "/drift" in html
+    assert "Model &amp; Data Drift Monitoring" in html
+    assert 'fetch("/drift"' in html
+
+
+def test_drift_endpoint():
+    response = client.get("/drift")
+
+    assert response.status_code == 200
+    payload = response.json()
+
+    assert payload["overall_severity"] == "LOW"
+    assert payload["reference_rows"] == 5069097
+    assert payload["current_rows"] == 1293523
+    assert payload["reference_window"] == "step < 355"
+    assert payload["current_window"] == "step >= 355"
+    assert isinstance(payload["metrics"], list)
+    assert len(payload["metrics"]) >= 1

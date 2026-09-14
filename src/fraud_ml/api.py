@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 import numpy as np
@@ -9,6 +10,7 @@ from xgboost import XGBClassifier
 
 
 MODEL_PATH = Path("models/behavioral_xgboost.json")
+DRIFT_REPORT_PATH = Path("reports/drift/drift_report.json")
 DECISION_THRESHOLD = 0.98
 
 app = FastAPI(
@@ -178,6 +180,25 @@ def model_info():
         "decision_threshold": DECISION_THRESHOLD,
         "threshold_strategy": "best F1 threshold",
     }
+
+
+@app.get("/drift")
+def drift_status():
+    if not DRIFT_REPORT_PATH.exists():
+        raise HTTPException(
+            status_code=503,
+            detail="Drift report is not available",
+        )
+
+    try:
+        return json.loads(
+            DRIFT_REPORT_PATH.read_text(encoding="utf-8")
+        )
+    except Exception as exc:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to load drift report: {exc}",
+        ) from exc
 
 
 @app.post(
