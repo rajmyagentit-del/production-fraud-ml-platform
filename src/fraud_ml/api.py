@@ -3,6 +3,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, Field
 from xgboost import XGBClassifier
 
@@ -148,22 +149,17 @@ def risk_level(probability: float) -> str:
 
 
 
-@app.get("/")
+@app.get("/", response_class=HTMLResponse)
 def root():
-    return {
-        "service": "Production Fraud ML API",
-        "status": "online",
-        "description": (
-            "Real-time fraud scoring service using a "
-            "behavioral XGBoost model."
-        ),
-        "dataset": "PaySim synthetic fraud dataset",
-        "docs": "/docs",
-        "health": "/health",
-        "model_info": "/model-info",
-        "prediction_endpoint": "POST /predict",
-        "decision_threshold": DECISION_THRESHOLD,
-    }
+    dashboard_path = Path("src/fraud_ml/templates/index.html")
+
+    if not dashboard_path.exists():
+        raise HTTPException(
+            status_code=500,
+            detail="Dashboard template not found",
+        )
+
+    return dashboard_path.read_text(encoding="utf-8")
 
 
 @app.get("/health")

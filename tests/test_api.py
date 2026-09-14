@@ -52,10 +52,12 @@ def test_root():
     response = client.get("/")
 
     assert response.status_code == 200
+    assert "text/html" in response.headers["content-type"]
 
-    data = response.json()
+    html = response.text
 
-    assert data["service"] == "Production Fraud ML API"
-    assert data["status"] == "online"
-    assert data["docs"] == "/docs"
-    assert data["decision_threshold"] == 0.98
+    assert "Fraud Risk Intelligence Dashboard" in html
+    assert 'fetch("/predict"' in html
+    assert "/docs" in html
+    assert "/model-info" in html
+    assert "/health" in html

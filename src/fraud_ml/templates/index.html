@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fraud Risk Intelligence Dashboard</title>
+
+<style>
+:root{
+  --bg:#08111f;
+  --panel:#101a2b;
+  --panel2:#142238;
+  --border:#223553;
+  --text:#f3f7ff;
+  --muted:#96a6bd;
+  --accent:#6ea8fe;
+  --green:#53d38a;
+  --yellow:#f4c95d;
+  --red:#ff6b6b;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:Inter,Arial,sans-serif;
+  background:
+    radial-gradient(circle at top right,rgba(110,168,254,.13),transparent 30%),
+    var(--bg);
+  color:var(--text);
+}
+
+.wrapper{
+  max-width:1200px;
+  margin:auto;
+  padding:36px 20px 60px;
+}
+
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:24px;
+  margin-bottom:28px;
+}
+
+.eyebrow{
+  color:var(--accent);
+  font-size:13px;
+  font-weight:800;
+  letter-spacing:.13em;
+  text-transform:uppercase;
+}
+
+h1{
+  margin:7px 0 10px;
+  font-size:42px;
+  line-height:1.05;
+}
+
+.subtitle{
+  margin:0;
+  color:var(--muted);
+  max-width:720px;
+  line-height:1.6;
+}
+
+.links{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.links a{
+  color:var(--text);
+  text-decoration:none;
+  border:1px solid var(--border);
+  background:var(--panel2);
+  padding:10px 13px;
+  border-radius:10px;
+  font-size:13px;
+  font-weight:700;
+}
+
+.links a:hover{
+  border-color:var(--accent);
+}
+
+.metrics{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+  margin-bottom:20px;
+}
+
+.metric-card{
+  border:1px solid var(--border);
+  background:var(--panel);
+  border-radius:14px;
+  padding:17px;
+}
+
+.metric-label{
+  color:var(--muted);
+  font-size:12px;
+  margin-bottom:7px;
+}
+
+.metric-value{
+  font-size:23px;
+  font-weight:800;
+}
+
+.main-grid{
+  display:grid;
+  grid-template-columns:1.15fr .85fr;
+  gap:20px;
+}
+
+.card{
+  border:1px solid var(--border);
+  background:var(--panel);
+  border-radius:18px;
+  padding:22px;
+  box-shadow:0 18px 45px rgba(0,0,0,.17);
+}
+
+.card h2{
+  margin:0 0 5px;
+  font-size:21px;
+}
+
+.helper{
+  margin:0 0 18px;
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.5;
+}
+
+.example-buttons{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:18px;
+}
+
+button{
+  cursor:pointer;
+  border-radius:9px;
+  border:1px solid var(--border);
+  background:var(--panel2);
+  color:var(--text);
+  padding:10px 13px;
+  font-weight:800;
+}
+
+button:hover{
+  border-color:var(--accent);
+}
+
+.primary{
+  width:100%;
+  margin-top:16px;
+  padding:13px 16px;
+  background:var(--accent);
+  color:#07101d;
+  border-color:var(--accent);
+}
+
+.form-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:13px;
+}
+
+label{
+  display:block;
+  color:var(--muted);
+  font-size:12px;
+  font-weight:700;
+  margin-bottom:6px;
+}
+
+input,select{
+  width:100%;
+  padding:11px 12px;
+  border-radius:9px;
+  border:1px solid var(--border);
+  background:#091426;
+  color:var(--text);
+  outline:none;
+}
+
+input:focus,select:focus{
+  border-color:var(--accent);
+  box-shadow:0 0 0 3px rgba(110,168,254,.12);
+}
+
+details{
+  border-top:1px solid var(--border);
+  margin-top:18px;
+  padding-top:15px;
+}
+
+summary{
+  color:var(--accent);
+  font-weight:800;
+  cursor:pointer;
+  margin-bottom:15px;
+}
+
+.result-empty{
+  min-height:310px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  color:var(--muted);
+  line-height:1.6;
+}
+
+.risk-badge{
+  display:inline-block;
+  padding:7px 11px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:.07em;
+}
+
+.LOW{
+  color:var(--green);
+  background:rgba(83,211,138,.12);
+}
+
+.MEDIUM{
+  color:var(--yellow);
+  background:rgba(244,201,93,.12);
+}
+
+.HIGH{
+  color:var(--red);
+  background:rgba(255,107,107,.13);
+}
+
+.probability{
+  font-size:58px;
+  font-weight:900;
+  letter-spacing:-.04em;
+  margin:10px 0 4px;
+}
+
+.progress{
+  width:100%;
+  height:12px;
+  border-radius:999px;
+  background:#08101f;
+  overflow:hidden;
+  margin:14px 0 20px;
+  border:1px solid var(--border);
+}
+
+.progress-fill{
+  height:100%;
+  width:0;
+  background:linear-gradient(90deg,var(--green),var(--yellow),var(--red));
+}
+
+.decision{
+  font-size:22px;
+  font-weight:800;
+  margin-bottom:17px;
+  text-transform:capitalize;
+}
+
+.row{
+  display:flex;
+  justify-content:space-between;
+  gap:20px;
+  padding:11px 0;
+  border-top:1px solid var(--border);
+  color:var(--muted);
+}
+
+.row strong{
+  color:var(--text);
+}
+
+.info-box{
+  margin-top:20px;
+  padding:14px;
+  border:1px solid var(--border);
+  border-radius:12px;
+  background:#091426;
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.55;
+}
+
+.stack{
+  margin-top:20px;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+}
+
+.stack div{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:13px;
+  text-align:center;
+  color:var(--muted);
+  font-size:12px;
+}
+
+.stack strong{
+  display:block;
+  color:var(--text);
+  margin-bottom:4px;
+}
+
+.error{
+  color:var(--red);
+  font-weight:700;
+  white-space:pre-wrap;
+}
+
+.footer{
+  margin-top:24px;
+  font-size:12px;
+  color:var(--muted);
+  text-align:center;
+}
+
+@media(max-width:900px){
+  .metrics{grid-template-columns:1fr 1fr}
+  .main-grid{grid-template-columns:1fr}
+  .header{flex-direction:column}
+}
+
+@media(max-width:600px){
+  .form-grid{grid-template-columns:1fr}
+  .metrics{grid-template-columns:1fr 1fr}
+  .stack{grid-template-columns:1fr 1fr}
+  h1{font-size:32px}
+}
+</style>
+</head>
+
+<body>
+
+<main class="wrapper">
+
+<section class="header">
+  <div>
+    <div class="eyebrow">Production Fraud ML Platform</div>
+    <h1>Fraud Risk Intelligence Dashboard</h1>
+    <p class="subtitle">
+      Live fraud scoring using a leakage-aware behavioral XGBoost model trained
+      on 6.36M+ synthetic PaySim transactions and evaluated using a strict temporal split.
+    </p>
+  </div>
+
+  <div class="links">
+    <a href="/docs">Swagger API</a>
+    <a href="/model-info">Model Info</a>
+    <a href="/health">Health</a>
+  </div>
+</section>
+
+<section class="metrics">
+  <div class="metric-card">
+    <div class="metric-label">PR-AUC</div>
+    <div class="metric-value">0.9740</div>
+  </div>
+
+  <div class="metric-card">
+    <div class="metric-label">Precision @ 0.98</div>
+    <div class="metric-value">92.93%</div>
+  </div>
+
+  <div class="metric-card">
+    <div class="metric-label">Recall @ 0.98</div>
+    <div class="metric-value">87.72%</div>
+  </div>
+
+  <div class="metric-card">
+    <div class="metric-label">Automated Tests</div>
+    <div class="metric-value">21 Passed</div>
+  </div>
+</section>
+
+<section class="main-grid">
+
+<div class="card">
+
+<h2>Transaction Analysis</h2>
+<p class="helper">
+  Load the verified held-out fraud example or edit the values and send a live request to the deployed model endpoint.
+</p>
+
+<div class="example-buttons">
+  <button type="button" onclick="loadFraudExample()">Load Verified Fraud Example</button>
+  <button type="button" onclick="loadLowerRiskExample()">Load Lower-Risk Example</button>
+</div>
+
+<form id="fraud-form">
+
+<div class="form-grid">
+
+<div>
+<label>Transaction Type</label>
+<select id="transaction_type">
+<option>TRANSFER</option>
+<option>CASH_OUT</option>
+<option>PAYMENT</option>
+<option>CASH_IN</option>
+<option>DEBIT</option>
+</select>
+</div>
+
+<div>
+<label>Amount</label>
+<input id="amount" type="number" step="any" min="0">
+</div>
+
+<div>
+<label>Origin Balance</label>
+<input id="oldbalanceOrg" type="number" step="any" min="0">
+</div>
+
+<div>
+<label>Destination Balance</label>
+<input id="oldbalanceDest" type="number" step="any" min="0">
+</div>
+
+</div>
+
+<details>
+<summary>Advanced Behavioral Features</summary>
+
+<div class="form-grid">
+
+<div>
+<label>Simulation Step</label>
+<input id="step" type="number" min="1">
+</div>
+
+<div>
+<label>Prior Transaction Count</label>
+<input id="orig_prior_txn_count" type="number" step="any" min="0">
+</div>
+
+<div>
+<label>Prior Amount Mean</label>
+<input id="orig_prior_amount_mean" type="number" step="any" min="0">
+</div>
+
+<div>
+<label>Steps Since Previous Transaction</label>
+<input id="orig_steps_since_prev_txn" type="number" step="any">
+</div>
+
+<div>
+<label>Account Age (steps)</label>
+<input id="orig_account_age_steps" type="number" step="any" min="0">
+</div>
+
+<div>
+<label>Amount vs Prior Mean</label>
+<input id="amount_vs_prior_mean" type="number" step="any" min="0">
+</div>
+
+<div>
+<label>Prior Origin→Destination Count</label>
+<input id="orig_dest_prior_txn_count" type="number" step="any" min="0">
+</div>
+
+<div>
+<label>Destination Seen Before</label>
+<select id="dest_seen_before">
+<option value="0">No</option>
+<option value="1">Yes</option>
+</select>
+</div>
+
+</div>
+</details>
+
+<button class="primary" id="submit-btn" type="submit">
+Analyze Fraud Risk
+</button>
+
+</form>
+</div>
+
+<div class="card">
+
+<h2>Risk Assessment</h2>
+<p class="helper">
+  Prediction returned directly from the live XGBoost inference endpoint.
+</p>
+
+<div id="result" class="result-empty">
+  Submit a transaction to view fraud probability, risk classification, and model decision.
+</div>
+
+<div class="info-box">
+<strong>Model:</strong> Behavioral XGBoost<br>
+<strong>Dataset:</strong> PaySim synthetic transaction data<br>
+<strong>Decision threshold:</strong> 0.98<br>
+<strong>Validation:</strong> strict chronological split<br>
+<strong>Serving:</strong> FastAPI
+</div>
+
+</div>
+
+</section>
+
+<section class="stack">
+
+<div>
+<strong>DuckDB</strong>
+Point-in-time feature generation
+</div>
+
+<div>
+<strong>XGBoost</strong>
+Fraud classification
+</div>
+
+<div>
+<strong>FastAPI</strong>
+Real-time inference
+</div>
+
+<div>
+<strong>Render</strong>
+Public HTTPS deployment
+</div>
+
+</section>
+
+<div class="footer">
+Synthetic PaySim portfolio demonstration. Metrics do not represent performance on real customer financial transactions.
+</div>
+
+</main>
+
+<script>
+
+function setValues(v){
+  for(const [key,value] of Object.entries(v)){
+    const el=document.getElementById(key);
+    if(el) el.value=value;
+  }
+}
+
+function loadFraudExample(){
+  setValues({
+    step:355,
+    transaction_type:"TRANSFER",
+    amount:42483.97,
+    oldbalanceOrg:42483.97,
+    oldbalanceDest:0,
+    orig_prior_txn_count:0,
+    orig_prior_amount_mean:0,
+    orig_steps_since_prev_txn:-1,
+    orig_account_age_steps:0,
+    amount_vs_prior_mean:0,
+    orig_dest_prior_txn_count:0,
+    dest_seen_before:0
+  });
+}
+
+function loadLowerRiskExample(){
+  setValues({
+    step:355,
+    transaction_type:"PAYMENT",
+    amount:120,
+    oldbalanceOrg:2500,
+    oldbalanceDest:800,
+    orig_prior_txn_count:8,
+    orig_prior_amount_mean:135,
+    orig_steps_since_prev_txn:2,
+    orig_account_age_steps:50,
+    amount_vs_prior_mean:0.89,
+    orig_dest_prior_txn_count:3,
+    dest_seen_before:1
+  });
+}
+
+function payload(){
+  return {
+    step:Number(document.getElementById("step").value),
+    transaction_type:document.getElementById("transaction_type").value,
+    amount:Number(document.getElementById("amount").value),
+    oldbalanceOrg:Number(document.getElementById("oldbalanceOrg").value),
+    oldbalanceDest:Number(document.getElementById("oldbalanceDest").value),
+    orig_prior_txn_count:Number(document.getElementById("orig_prior_txn_count").value),
+    orig_prior_amount_mean:Number(document.getElementById("orig_prior_amount_mean").value),
+    orig_steps_since_prev_txn:Number(document.getElementById("orig_steps_since_prev_txn").value),
+    orig_account_age_steps:Number(document.getElementById("orig_account_age_steps").value),
+    amount_vs_prior_mean:Number(document.getElementById("amount_vs_prior_mean").value),
+    orig_dest_prior_txn_count:Number(document.getElementById("orig_dest_prior_txn_count").value),
+    dest_seen_before:Number(document.getElementById("dest_seen_before").value)
+  };
+}
+
+document.getElementById("fraud-form").addEventListener("submit",async function(e){
+
+e.preventDefault();
+
+const result=document.getElementById("result");
+const btn=document.getElementById("submit-btn");
+
+btn.disabled=true;
+btn.textContent="Analyzing...";
+result.className="result-empty";
+result.textContent="Running live model inference...";
+
+try{
+
+const r=await fetch("/predict",{
+  method:"POST",
+  headers:{"Content-Type":"application/json"},
+  body:JSON.stringify(payload())
+});
+
+const d=await r.json();
+
+if(!r.ok){
+  throw new Error(d.detail || "Prediction failed");
+}
+
+const pct=(d.fraud_probability*100).toFixed(2);
+
+result.className="";
+result.innerHTML=
+'<div class="risk-badge '+d.risk_level+'">'+d.risk_level+' RISK</div>'+
+'<div class="probability">'+pct+'%</div>'+
+'<div class="helper">Fraud probability</div>'+
+'<div class="progress"><div class="progress-fill" style="width:'+pct+'%"></div></div>'+
+'<div class="decision">'+d.prediction+'</div>'+
+'<div class="row"><span>Decision threshold</span><strong>'+d.threshold+'</strong></div>'+
+'<div class="row"><span>Raw probability</span><strong>'+d.fraud_probability+'</strong></div>'+
+'<div class="row"><span>Risk level</span><strong>'+d.risk_level+'</strong></div>';
+
+}catch(err){
+
+result.className="error";
+result.textContent="Unable to score transaction:\n"+err.message;
+
+}finally{
+
+btn.disabled=false;
+btn.textContent="Analyze Fraud Risk";
+
+}
+
+});
+
+loadFraudExample();
+
+</script>
+
+</body>
+</html>
