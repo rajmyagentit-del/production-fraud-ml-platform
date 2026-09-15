@@ -58,6 +58,12 @@ This project was built to address those problems rather than only train a classi
 - automatic Render deployment from GitHub
 - public HTTPS inference
 - deployment evidence and reproducibility documentation
+- chronological model and data drift monitoring
+- model-score and fraud-prevalence shift monitoring
+- drift-triggered retraining policy
+- chronological challenger model training
+- champion/challenger evaluation on a shared future window
+- safety-oriented model promotion governance
 
 ---
 
@@ -135,6 +141,34 @@ PR-AUC is emphasized because fraud is extremely imbalanced and ranking quality o
 
 ---
 
+## Model Lifecycle Governance
+
+Detected drift can trigger challenger training, but retraining does not automatically replace the deployed model.
+
+The current lifecycle evaluation trains the challenger on expanded chronological history (`step < 525`) and compares both champion and challenger on the same untouched future window (`step >= 525`).
+
+| Metric | Champion | Challenger |
+|---|---:|---:|
+| PR-AUC | 0.986797 | 0.990135 |
+| ROC-AUC | 0.999880 | 0.999911 |
+| Precision | 0.964052 | 0.882991 |
+| Recall | 0.871308 | 0.996624 |
+| F1 | 0.915337 | 0.936373 |
+| False Positives | 77 | 313 |
+| False Negatives | 305 | 8 |
+
+The challenger improved PR-AUC, recall, F1, and false-negative detection. However, precision decreased and false positives increased beyond the configured promotion limits.
+
+**Lifecycle decision: `KEEP_PRODUCTION`**
+
+The existing champion therefore remains the deployed model.
+
+This demonstrates an important production-style ML principle: a challenger is not promoted simply because selected model metrics improve. Operational tradeoffs are evaluated before a deployment decision is recommended, and automatic promotion is intentionally disabled.
+
+The lifecycle decision can be inspected through the public `/lifecycle` endpoint and dashboard.
+
+---
+
 ## System Architecture
 
 ```text
@@ -167,6 +201,25 @@ FastAPI Inference Service
         |
         v
 Render Public HTTPS Deployment
+        |
+        v
+Model + Data Drift Monitoring
+        |
+        v
+Retraining Decision Policy
+        |
+        v
+Chronological Challenger Training
+        |
+        v
+Champion vs Challenger Evaluation
+        |
+        v
+Promotion Safety Gate
+        |
+        +----> KEEP_PRODUCTION
+        |
+        +----> Candidate Approved for Review
 ```
 
 The historical features are generated using prior time steps so that future transaction information is not intentionally introduced into the behavioral history.
@@ -238,6 +291,8 @@ The dashboard calls the same FastAPI `/predict` endpoint exposed through the pub
 | `GET /health` | service and model availability |
 | `GET /model-info` | model and threshold information |
 | `POST /predict` | real-time fraud scoring |
+| `GET /drift` | model and data drift monitoring report |
+| `GET /lifecycle` | retraining and model lifecycle decision |
 | `GET /docs` | interactive Swagger API |
 
 See [API Guide](docs/API_GUIDE.md) for request fields and examples.
@@ -249,12 +304,12 @@ See [API Guide](docs/API_GUIDE.md) for request fields and examples.
 The latest verified local test run completed with:
 
 ```text
-21 passed, 1 warning
+37 passed, 1 warning
 ```
 
 The warning is a non-blocking Starlette/TestClient deprecation warning observed during development.
 
-Tests cover feature logic, validation, temporal splitting, threshold behavior, behavioral features, and API behavior.
+Tests cover feature logic, validation, temporal splitting, threshold behavior, behavioral features, drift monitoring, retraining policy, promotion governance, and API behavior.
 
 ---
 
