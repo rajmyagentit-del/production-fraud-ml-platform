@@ -32,6 +32,8 @@ https://production-fraud-ml-platform.onrender.com/docs
 | GET | `/health` | service and model health |
 | GET | `/model-info` | model and threshold information |
 | POST | `/predict` | fraud probability and risk prediction |
+| GET | `/drift` | model and data drift monitoring report |
+| GET | `/lifecycle` | retraining and champion/challenger lifecycle decision |
 | GET | `/docs` | interactive Swagger API |
 
 ---
